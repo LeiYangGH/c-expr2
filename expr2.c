@@ -4,14 +4,14 @@
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 
-#define SIZE 50 /* Size of Stack */
+#define SIZE 50 
 #include <ctype.h>
 #include <stdio.h>
 
 char s[SIZE];
-int top = -1; /* Global declarations */
+int top = -1; 
 
-/* Function to remove spaces from given string */
+
 void RemoveSpaces(char* source) {
  char* i = source;
  char* j = source;
@@ -23,17 +23,17 @@ void RemoveSpaces(char* source) {
  *i = 0;
 }
 
-/* Function for PUSH operation */
+
 void push(char elem) { 
  s[++top] = elem;
 }
 
-/* Function for POP operation */
+
 char pop() { 
  return (s[top--]);
 }
 
-/* Function for precedence */
+
 int pr(char elem) { 
  switch (elem) {
  case '#':
@@ -49,9 +49,7 @@ int pr(char elem) {
  }
 }
 
-/*
-* Function to convert from infix to postfix expression
-*/
+
 void infix_to_postfix(char *infix, char *postfix) {
  char ch, elem;
  int i = 0, k = 0;
@@ -67,30 +65,33 @@ void infix_to_postfix(char *infix, char *postfix) {
  else if (ch == ')') {
  while (s[top] != '(')
  postfix[k++] = pop();
- elem = pop(); /* Remove ( */
- } else { /* Operator */
+ elem = pop(); 
+ } else { 
  while (pr(s[top]) >= pr(ch))
  postfix[k++] = pop();
  push(ch);
  }
  }
  
- while (s[top] != '#') /* Pop from stack till empty */
+ while (s[top] != '#') 
  postfix[k++] = pop();
  
- postfix[k] = 0; /* Make postfix as valid string */
+ postfix[k] = 0; 
 }
 
-/*
-* Function to evaluate a postfix expression
-*/
+
 int eval_postfix(char *postfix) {
  char ch;
  int i = 0, op1, op2;
- while((ch = postfix[i++]) != 0) {
+ int num_cnt = 0;
+ while((ch = postfix[i++]) != 0 && num_cnt<=2) {
  if(isdigit(ch)) 
- push(ch-'0'); /* Push the operand */
- else { /* Operator,pop two operands */
+ {
+ 	num_cnt++;
+ 	 push(ch-'0'); 
+ }
+
+ else { 
  op2 = pop();
  op1 = pop();
  switch(ch) {
@@ -100,7 +101,16 @@ int eval_postfix(char *postfix) {
  break;
  case '*' : push(op1*op2);
  break;
- case '/' : push(op1/op2);
+ case '/' : 
+ if(op2==0){
+ 	printf("非法操作\n");
+ 	exit(-1);
+ 
+ }else{
+ 	 push(op1/op2);
+ 	 printf("商为%d，余数为%d\n",(int)op1/(int)op2,(int)op1%(int)op2);
+ }
+
  break;
  }
  }
@@ -111,13 +121,13 @@ int eval_postfix(char *postfix) {
 
 int main(int argc, char *argv[]) {
 	char infx[50], pofx[50];
- printf("\nInput the infix expression: ");
+ printf("\n输入两个整数的四则运算表达式: ");
  fgets(infx, 50, stdin);
  
  infix_to_postfix(infx, pofx);
 
- printf("\nGiven Infix Expression: %sPostfix Expression: %s", infx, pofx);
+ printf("\n输入的表达式: %s", infx);
  top = -1;
- printf("\nResult of evaluation of postfix expression : %d", eval_postfix(pofx));
+ printf("\n表达式求值 : %d", eval_postfix(pofx));
 	return 0;
 }
