@@ -9,125 +9,128 @@
 #include <stdio.h>
 
 char s[SIZE];
-int top = -1; 
+int top = -1;
 
 
 void RemoveSpaces(char* source) {
- char* i = source;
- char* j = source;
- while(*j != 0) {
- *i = *j++;
- if(*i != ' ')
- i++;
- }
- *i = 0;
+	char* i = source;
+	char* j = source;
+	while (*j != 0) {
+		*i = *j++;
+		if (*i != ' ')
+			i++;
+	}
+	*i = 0;
 }
 
 
-void push(char elem) { 
- s[++top] = elem;
+void push(char elem) {
+	s[++top] = elem;
 }
 
 
-char pop() { 
- return (s[top--]);
+char pop() {
+	return (s[top--]);
 }
 
 
-int pr(char elem) { 
- switch (elem) {
- case '#':
- return 0;
- case '(':
- return 1;
- case '+':
- case '-':
- return 2;
- case '*':
- case '/':
- return 3;
- }
+int pr(char elem) {
+	switch (elem) {
+	case '#':
+		return 0;
+	case '(':
+		return 1;
+	case '+':
+	case '-':
+		return 2;
+	case '*':
+	case '/':
+		return 3;
+	}
 }
 
 
-void infix_to_postfix(char *infix, char *postfix) {
- char ch, elem;
- int i = 0, k = 0;
- 
- RemoveSpaces(infix);
- push('#');
- 
- while ((ch = infix[i++]) != '\n') {
- if (ch == '(')
- push(ch);
- else if (isalnum(ch))
- postfix[k++] = ch;
- else if (ch == ')') {
- while (s[top] != '(')
- postfix[k++] = pop();
- elem = pop(); 
- } else { 
- while (pr(s[top]) >= pr(ch))
- postfix[k++] = pop();
- push(ch);
- }
- }
- 
- while (s[top] != '#') 
- postfix[k++] = pop();
- 
- postfix[k] = 0; 
+void infix_to_postfix(char* infix, char* postfix) {
+	char ch, elem;
+	int i = 0, k = 0;
+
+	RemoveSpaces(infix);
+	push('#');
+
+	while ((ch = infix[i++]) != '\n') {
+		if (ch == '(')
+			push(ch);
+		else if (isalnum(ch))
+			postfix[k++] = ch;
+		else if (ch == ')') {
+			while (s[top] != '(')
+				postfix[k++] = pop();
+			elem = pop();
+		}
+		else {
+			while (pr(s[top]) >= pr(ch))
+				postfix[k++] = pop();
+			push(ch);
+		}
+	}
+
+	while (s[top] != '#')
+		postfix[k++] = pop();
+
+	postfix[k] = 0;
 }
 
 
-int eval_postfix(char *postfix) {
- char ch;
- int i = 0, op1, op2;
- int num_cnt = 0;
- while((ch = postfix[i++]) != 0 && num_cnt<=2) {
- if(isdigit(ch)) 
- {
- 	num_cnt++;
- 	 push(ch-'0'); 
- }
+int eval_postfix(char* postfix) {
+	char ch;
+	int i = 0, op1, op2;
+	int num_cnt = 0;
+	while ((ch = postfix[i++]) != 0 && num_cnt <= 2) {
+		if (isdigit(ch))
+		{
+			num_cnt++;
+			push(ch - '0');
+		}
 
- else { 
- op2 = pop();
- op1 = pop();
- switch(ch) {
- case '+' : push(op1+op2); 
- break;
- case '-' : push(op1-op2); 
- break;
- case '*' : push(op1*op2);
- break;
- case '/' : 
- if(op2==0){
- 	printf("非法操作\n");
- 	exit(-1);
- 
- }else{
- 	 push(op1/op2);
- 	 printf("商为%d，余数为%d\n",(int)op1/(int)op2,(int)op1%(int)op2);
- }
+		else {
+			op2 = pop();
+			op1 = pop();
+			switch (ch) {
+			case '+': push(op1 + op2);
+				break;
+			case '-': push(op1 - op2);
+				break;
+			case '*': push(op1 * op2);
+				break;
+			case '/':
+				if (op2 == 0) {
+					printf("非法操作\n");
+					exit(-1);
 
- break;
- }
- }
- }
- return s[top];
+				}
+				else {
+					push(op1 / op2);
+					printf("商为%d，余数为%d\n", (int)op1 / (int)op2, (int)op1 % (int)op2);
+				}
+
+				break;
+			}
+		}
+	}
+	return s[top];
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	char infx[50], pofx[50];
- printf("\n输入两个整数的四则运算表达式: ");
- fgets(infx, 50, stdin);
- 
- infix_to_postfix(infx, pofx);
+	printf("\n输入两个整数的四则运算表达式: ");
+	fgets(infx, 50, stdin);
 
- printf("\n输入的表达式: %s", infx);
- top = -1;
- printf("\n表达式求值 : %d", eval_postfix(pofx));
+	infix_to_postfix(infx, pofx);
+
+	printf("\n输入的表达式: %s", infx);
+	top = -1;
+	printf("\n表达式求值 : %d", eval_postfix(pofx));
 	return 0;
 }
+
